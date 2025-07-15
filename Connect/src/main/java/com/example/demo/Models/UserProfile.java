@@ -46,8 +46,8 @@ public class UserProfile {
     private String department;
     
     @Column(nullable= false)
-    @JsonProperty("Role")
-    private UserType role;
+    @JsonProperty("Year")
+    private Long year;
     
     private String profileImgUrl;
     
@@ -132,13 +132,13 @@ public class UserProfile {
 	}
 
 
-	public UserType getRole() {
-		return role;
+	public Long getYear() {
+		return year;
 	}
 
 
-	public void setRole(UserType role) {
-		this.role = role;
+	public void setYear(Long year) {
+		this.year = year;
 	}
 
 

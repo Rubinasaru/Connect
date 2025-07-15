@@ -38,7 +38,7 @@ public class JwtService {
             .setSubject(subject)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-            .signWith(SignatureAlgorithm.HS256,secretKey)
+            .signWith(key())
             .compact();
     }
     
@@ -59,7 +59,7 @@ public class JwtService {
                 .setSubject(username) // Set the username as the token's subject
                 .setIssuedAt(new Date()) // Set the current time as the token's subject
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs)) // Set the expiration time
-                .signWith(SignatureAlgorithm.HS256,key()) // Sign the token using the secret key
+                .signWith(key()) // Sign the token using the secret key
                 .compact();
     }
     
@@ -69,7 +69,7 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject(); // ✅ this extracts the username (subject) from the token
+                .getSubject(); 
     }
 
 

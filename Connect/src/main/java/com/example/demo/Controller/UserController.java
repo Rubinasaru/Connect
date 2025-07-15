@@ -3,8 +3,10 @@ package com.example.demo.Controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import com.example.demo.DTO.request.UserDTO;
 import com.example.demo.DTO.response.ResponseObject;
 import com.example.demo.Enums.UserType;
 import com.example.demo.Models.UserProfile;
+import com.example.demo.Service.UserDetailsImpl;
 import com.example.demo.Service.UserProfileService;
 import com.example.demo.Service.UserService;
 import com.example.demo.utils.FileValidator;
@@ -51,19 +54,28 @@ public class UserController {
 	private FileValidator fileValidator;
     
     //Set up the user Profile with other informations 
-    @PutMapping("user/setupprofile/{id}")
+    @PutMapping("user/setupprofile/{userId}")
     @Operation(summary="Set up User details")
     public ResponseEntity<ResponseObject> setupProfile(
-        @PathVariable("id") Long id,
+        @PathVariable("userId") Long userId,
         @RequestBody ProfileSetupRequest request) {
-        return ResponseEntity.ok(ResponseObject.success("Profile updated successfully!",userService.setupProfile(id, request)));
+        return ResponseEntity.ok(ResponseObject.success("Profile updated successfully!",userService.setupProfile(userId, request)));
     }
     
     //Update the user information in Profile
-    @PutMapping("/user/updateUserDetails/{id}")
+    @PutMapping("/user/updateUserDetails/{userId}")
     @Operation(summary = "Update user details")
-    public ResponseEntity<ResponseObject> updateUserDetails(@PathVariable("id") Long id, @Valid @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUserDetails(id, userDTO);
+    public ResponseEntity<ResponseObject> updateUserDetails(@PathVariable("userId") Long userId,
+    		@RequestBody ProfileSetupRequest request,
+    		@AuthenticationPrincipal UserDetailsImpl currentUser,
+    		@Valid @RequestBody UserDTO userDTO) {
+    	
+    	if (!currentUser.getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                 .body(ResponseObject.failure("Not allowed to edit this profile."));
+        }
+    	
+        UserDTO updatedUser = userService.updateUserDetails(userId, userDTO);
         return ResponseEntity.ok(ResponseObject.success("User details updated successfully!", updatedUser));
     }
     
@@ -80,11 +92,11 @@ public class UserController {
     @PutMapping(value = "/user/{userId}/profileImage", consumes = "multipart/form-data")
     @Operation(summary = "Upload or update user profile image")
     public ResponseEntity<ResponseObject> updateUserProfileImage(
-            @PathVariable Long id,
+            @PathVariable("userId") Long userId,
             @RequestParam("filePath") String filePath,
             @RequestParam("file") MultipartFile file) throws IOException {
         fileValidator.validateFile(file);
-        UserDTO updateUserProfileImage = userService.updateUserProfileImage(id,filePath, file);
+        UserDTO updateUserProfileImage = userService.updateUserProfileImage(userId,filePath, file);
         return ResponseEntity.ok(ResponseObject.success("Profile image uploaded successfully!", updateUserProfileImage));
     }
 		

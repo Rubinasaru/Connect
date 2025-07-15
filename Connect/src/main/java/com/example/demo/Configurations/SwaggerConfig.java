@@ -32,6 +32,7 @@ public class SwaggerConfig {
 	                                new Tag().name("Auth Controller").description("Authentication related information"),
 	                                new Tag().name ("Admin Controller").description("Admin Dashboard"),
 	                                new Tag().name("Otp Controller").description("OTP related information"),
+	                                new Tag().name("Connection Controller").description("User Connections related information"),
 	                                new Tag().name("Post Controller").description("Posts related information")        
 	                        )
 	                )

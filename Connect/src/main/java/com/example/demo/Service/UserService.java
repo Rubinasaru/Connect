@@ -26,7 +26,7 @@ public interface UserService {
 
 		UserDTO updateUserDetails(Long userId, @Valid UserDTO userDTO);
 
-		UserDTO updateUserRoles(Long userId, UserType roles);
+	//	UserDTO updateUserRoles(Long userId, UserType roles);
 
 		UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file);
 }

@@ -28,44 +28,33 @@ public class AuthTokenFilter  extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+    	@Override
+    	protected void doFilterInternal(HttpServletRequest request,
+    	                                HttpServletResponse response,
+    	                                FilterChain filterChain) throws ServletException, IOException {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-        logger.debug("AuthTokenFilter called for URI: {}", request.getRequestURI());
+    		String path = request.getRequestURI();
+    		if (path.equals("/api/v1/auth/register")) {
+    		    filterChain.doFilter(request, response);
+    		    return;
+    		}
 
-        try{
-            // Parse the JWT token from the request header
-            String jwt = parseJwt(request);
-            // If the token exists and is valid, authenticate the user
-            if (jwt != null && jwtService.validateJwtToken(jwt)) {
-                // Extract the username from the token
-                String username = jwtService.getUserNameFromJwtToken(jwt);
+    	    // Token validation logic
+    	    String token = parseJwt(request);
+    	    if (token != null && jwtService.validateJwtToken(token)) {
+    	        String username = jwtService.getUserNameFromJwtToken(token);
+    	        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Load user details from the UserDetailsService
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    	        UsernamePasswordAuthenticationToken authentication =
+    	            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                // Create an authentication token with the user's details and roles
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                logger.debug("Roles from JWT: {}", userDetails.getAuthorities());
+    	        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    	        SecurityContextHolder.getContext().setAuthentication(authentication);
+    	    }
 
-                // Set additional details from the request
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    	    filterChain.doFilter(request, response);
+    	}
 
-                // Set the authentication object in the SecurityContext
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }catch (Exception e) {
-            // Log any errors that occur during authentication
-            logger.error("Cannot set user authentication: {}", e.getMessage());
-        }
-
-        // Continue the filter chain
-        filterChain.doFilter(request, response);
-    }
 
     private String parseJwt(HttpServletRequest request) {
         String jwt = jwtService.getJwtFromHeader(request);

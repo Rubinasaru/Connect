@@ -1,40 +1,62 @@
 package com.example.demo.DTO.response;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-@Hidden
 @Data
+@NoArgsConstructor
 public class ResponseObject {
-		@Getter
-		@Setter
-	    private final boolean status;
-		
-		@Getter
-		@Setter
-	    private final String message;
-		
-		@Getter
-		@Setter
-	    private final Object data;
+    private boolean status;
+    private String message;
+    private Object data;
 
-	    // Constructor for single object responses
-	    public ResponseObject(boolean status, String message, Object data) {
-	        this.status = status;
-	        this.message = message;
-	        this.data = data;
-	    }
+    public ResponseObject(boolean status, String message, Object data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
 
-	    public static ResponseObject success(String message, Object data) {
-	        return new ResponseObject(true, message, data);
-	    }
-
-	    public static ResponseObject failure(String message) {
-	        return new ResponseObject(false, message, null);
-	    }
-
-
+    public boolean isStatus() {
+		return status;
 	}
 
+
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+
+
+	public String getMessage() {
+		return message;
+	}
+
+
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+
+
+	public Object getData() {
+		return data;
+	}
+
+
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+
+
+	public static ResponseObject success(String message, Object data) {
+        return new ResponseObject(true, message, data);
+    }
+
+    public static ResponseObject failure(String message) {
+        return new ResponseObject(false, message, null);
+    }
+}

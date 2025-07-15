@@ -17,7 +17,8 @@ public class UserDTO {
 
     @NotBlank(message = "Email is required!")
     @Email(message = "Should be of type email!")
-    private String Email;
+    @JsonProperty("Email")
+    private String email;
 
     @NotBlank(message = "Username is required!")
     @Size(min = 3, max = 20, message = "Username must contain minimum 3 characters and maximum 20 characters!")
@@ -29,46 +30,63 @@ public class UserDTO {
     private String password;
 
 	@NotBlank(message = "Fullname is required!")
-    private String FirstName;
+	@JsonProperty("First Name")
+    private String firstName;
 	
 	@Column(nullable= true)
-    private String MiddleName;
+	@JsonProperty("Middle Name")
+    private String middleName;
 	
 	@NotBlank(message = "Lastname is required!")
-    private String LastName;
+	@JsonProperty("Last Name")
+    private String lastName;
     
     @NotBlank(message = "Department is required!")
-    private String Department;
+    @JsonProperty("Department")
+    private String department;
     
-    private UserType Role; 
+    @JsonProperty("Year")
+    private Long year; 
     
     @Schema(example = "string")
-    private String ProfileImgUrl;
+    @JsonProperty("Profile Image Url")
+    private String profileImgUrl;
     
-    private Boolean ProfileCompleted=false;
+    private Boolean profileCompleted=false;
     
-    public Boolean getProfileCompleted() {
-		return ProfileCompleted;
+    public UserDTO(){
+    	
+    }
+    
+    public UserDTO(long id, String username, String email,String profileImgUrl) {
+		this.id=id;
+		this.username=username;
+		this.email=email;
+		this.profileImgUrl=profileImgUrl;
+	}
+
+	public Boolean getProfileCompleted() {
+		return profileCompleted;
 	}
 
 	public void setProfileCompleted(Boolean ProfileCompleted) {
-		this.ProfileCompleted = ProfileCompleted;
+		this.profileCompleted = ProfileCompleted;
 	}
 
 	public long getId() {
  		return id;
  	}
 
- 	public void setId(long id) {
- 		this.id = id;
- 	}
-
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getEmail() {
-		return Email;
+		return email;
 	}
 
 	public void setEmail(String email) {
-		Email = email;
+		this.email = email;
 	}
 
 	public String getUsername() {
@@ -88,55 +106,51 @@ public class UserDTO {
 	}
 
 	public String getFirstName() {
-		return FirstName;
+		return firstName;
 	}
 
 	public void setFirstName(String firstName) {
-		FirstName = firstName;
+		this.firstName = firstName;
 	}
 
 	public String getMiddleName() {
-		return MiddleName;
+		return middleName;
 	}
 
 	public void setMiddleName(String middleName) {
-		MiddleName = middleName;
+		this.middleName = middleName;
 	}
 
 	public String getLastName() {
-		return LastName;
+		return lastName;
 	}
-
+	
 	public void setLastName(String lastName) {
-		LastName = lastName;
+		this.lastName = lastName;
 	}
 
 	public String getDepartment() {
-		return Department;
+		return department;
 	}
 
 	public void setDepartment(String department) {
-		Department = department;
+		this.department = department;
 	}
 
-	public UserType getRole() {
-		return Role;
+	public Long getYear() {
+		return year;
 	}
 
-	public void setRole(UserType role) {
-		Role = role;
+	public void setYear(Long year) {
+		this.year = year;
 	}
 
 	public String getProfileImgUrl() {
-		return ProfileImgUrl;
+		return profileImgUrl;
 	}
 
 	public void setProfileImgUrl(String profileImgUrl) {
-		ProfileImgUrl = profileImgUrl;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+		this.profileImgUrl = profileImgUrl;
 	}
 
  	

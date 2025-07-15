@@ -58,9 +58,15 @@ public class UserServiceImp implements UserService {
 
         UserProfile profile = new UserProfile();
         profile.setUser(user);
-        profile.setEmail(request.getEmail());
+        
+        if(profileRepository.existsByEmail(request.getEmail())) {
+        	throw new IllegalArgumentException("Email (" + request.getEmail() + ") " + " is already in use!");
+        }else {
+        	profile.setEmail(request.getEmail());
+        }
+        
         profile.setDepartment(request.getDepartment());
-        profile.setRole(request.getRole());
+        profile.setYear(request.getYear());
         profile.setFirstName(request.getFirstName());
         profile.setMiddleName(request.getMiddleName());
         profile.setLastName(request.getLastName());
@@ -120,7 +126,7 @@ public class UserServiceImp implements UserService {
     	    profile.setFirstName(dto.getFirstName());
     	    profile.setMiddleName(dto.getMiddleName());
             profile.setLastName(dto.getLastName());
-            profile.setRole(dto.getRole());
+            profile.setYear(dto.getYear());
     	    profile.setDepartment(dto.getDepartment());
     	    profile.setProfileImgUrl(dto.getProfileImgUrl());
 
@@ -130,12 +136,12 @@ public class UserServiceImp implements UserService {
     	    return mapToDTO(user);
     	}
 
-    @Override
-    public UserDTO updateUserRoles(Long userId, UserType roles) {
-        UserProfile user = profileRepository.findById(userId).orElseThrow();
-        user.setRole(roles);
-        return mapToDTO(profileRepository.save(user));
-    }
+//    @Override
+//    public UserDTO updateUserRoles(Long userId, UserType roles) {
+//        UserProfile user = profileRepository.findById(userId).orElseThrow();
+//        user.setRole(roles);
+//        return mapToDTO(profileRepository.save(user));
+//    }
 
     @Override
     public UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file) {
@@ -161,7 +167,7 @@ public class UserServiceImp implements UserService {
             dto.setFirstName(profile.getFirstName());
             dto.setMiddleName(profile.getMiddleName());
             dto.setLastName(profile.getLastName());
-            dto.setRole(profile.getRole());
+            dto.setYear(profile.getYear());
             dto.setDepartment(profile.getDepartment());
             dto.setProfileImgUrl(profile.getProfileImgUrl());
         }
@@ -173,7 +179,7 @@ public class UserServiceImp implements UserService {
     	UserDTO dto= new UserDTO();
             dto.setEmail(profile.getEmail());
             dto.setDepartment(profile.getDepartment());
-            dto.setRole(profile.getRole());
+            dto.setYear(profile.getYear());
             dto.setFirstName(profile.getFirstName());
             dto.setMiddleName(profile.getMiddleName());
             dto.setLastName(profile.getLastName());

@@ -11,7 +11,7 @@ public class ProfileSetupRequest {
 	private String MiddleName;
 	private String LastName;
 	private String Department;
-	private UserType Role;
+	private Long Year;
 	private String ProfileImgUrl;
 	
 
@@ -42,11 +42,11 @@ public class ProfileSetupRequest {
 	public void setDepartment(String department) {
 		Department = department;
 	}
-	public UserType getRole() {
-		return Role;
+	public Long getYear() {
+		return Year;
 	}
-	public void setRole(UserType role) {
-		Role = role;
+	public void setYear(Long year) {
+		Year = year;
 	}
 	public String getProfileImgUrl() {
 		return ProfileImgUrl;

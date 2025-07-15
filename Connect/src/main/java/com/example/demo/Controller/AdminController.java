@@ -83,14 +83,14 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
     
-    //update the user roles by the admin
-    @PutMapping("/{id}/roles")
-    @Operation(summary = "Update user roles")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseObject> updateUserRoles(@PathVariable("id") Long id, @RequestBody UserType role) {
-        UserDTO updatedUser = userService.updateUserRoles(id, role);
-        return ResponseEntity.ok(ResponseObject.success("User roles updated successfully!", updatedUser));
-    }
+//    //update the user roles by the admin
+//    @PutMapping("/{id}/roles")
+//    @Operation(summary = "Update user roles")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<ResponseObject> updateUserRoles(@PathVariable("id") Long id, @RequestBody UserType role) {
+//        UserDTO updatedUser = userService.updateUserRoles(id, role);
+//        return ResponseEntity.ok(ResponseObject.success("User roles updated successfully!", updatedUser));
+//    }
 
 }
 

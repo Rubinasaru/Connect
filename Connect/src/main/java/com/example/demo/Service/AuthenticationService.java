@@ -8,15 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.example.demo.DTO.request.ForgotPasswordDTO;
 import com.example.demo.DTO.request.LoginRequest;
 import com.example.demo.DTO.request.OtpRequest;
 import com.example.demo.DTO.request.RegisterRequest;
-import com.example.demo.DTO.request.ResetPasswordDTO;
 import com.example.demo.DTO.response.RegisterResponseDTO;
 import com.example.demo.DTO.response.UserInfoResponse;
-import com.example.demo.Enums.AuthProvider;
+
 import com.example.demo.Models.User;
 import com.example.demo.Models.UserProfile;
 import com.example.demo.Repository.ProfileRepository;
@@ -124,4 +121,3 @@ public class AuthenticationService {
         otpService.sendOtpEmail(otpRequest.getEmail());
     }
 }
-
