@@ -73,7 +73,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/api/v1/user/setupprofile").authenticated()
+                        .requestMatchers("/api/v1/user/setupprofile").permitAll()
                         .anyRequest().authenticated()
                 )
               
@@ -110,8 +110,10 @@ public class WebSecurityConfig {
             "/api/v1/**",
     		"/api/v1/admin/**",
             "/api/v1/auth/**",
-            "api/v1/user/**",
+            "/api/v1/user/**",
             "/api/v1/posts/**",
+            "/api/v1/connections/**",
+            "/api/v1/recommendations/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",

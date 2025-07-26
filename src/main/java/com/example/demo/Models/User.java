@@ -23,8 +23,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class User {
-
-	@Id
+    @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 

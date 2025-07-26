@@ -19,19 +19,19 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="post")
 public class Post {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String content;
+	private String content;
 
-    @Enumerated(EnumType.STRING)
-    private PostType type; 
+	@Enumerated(EnumType.STRING)
+	private PostType type;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+	private LocalDateTime createdAt = LocalDateTime.now();
 
 	public Long getId() {
 		return id;
@@ -73,6 +73,5 @@ public class Post {
 		this.createdAt = createdAt;
 	}
 
-    
-}
 
+}

@@ -55,10 +55,11 @@ public class AuthController {
 	  @PostMapping("/login")
 	    @Operation(summary = "Login a user and return JWT token")
 	    public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginRequest loginRequest){
-	        return ResponseEntity.ok(
-	                ResponseObject.success("Logged in successfully!", authService.login(loginRequest))
-	        );
-	    }
+              return ResponseEntity.ok(
+                      ResponseObject.success("Logged in successfully!", authService.login(loginRequest))
+              );
+      }
+
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
@@ -111,31 +112,26 @@ public class AuthController {
         return ResponseEntity.ok(ResponseObject.success("OTP verified!", null));
 
     }
-    
+
     @PostMapping("/resetPassword")
-    @Operation(summary="Reset Password")
-    public void resetPassword( @RequestBody @Valid ResetPasswordDTO dto) {
-        if (dto == null || dto.getEmail() == null || dto.getNewPassword() == null || dto.getConfirmNewPassword() == null) {
-            throw new IllegalArgumentException("All fields are required!");
+    @Operation(summary = "Reset Password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok(
+                    ResponseObject.success("Password changed successfully!", null)
+            );
+        } catch (Exception e) {
+            System.err.println("Reset password error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    ResponseObject.failure("Failed to reset password: " + e.getMessage() + "!")
+            );
         }
 
-        if (!dto.isPasswordMatch()) {
-            throw new IllegalArgumentException("Passwords do not match!");
-        }
+      }
 
-        UserProfile profile = profileRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Email not registered!"));
 
-        User user = profile.getUser();
-        if (user == null) {
-            throw new IllegalStateException("User not found!");
-        }
 
-        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-        userRepository.save(user);
-    }
-    
-    
 
 
 }

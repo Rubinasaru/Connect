@@ -3,11 +3,10 @@ package com.example.demo.Service.Post;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.demo.DTO.request.Post.CommentRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.DTO.request.Post.CommentRequestDTO;
 import com.example.demo.DTO.request.Post.PostRequestDTO;
 import com.example.demo.Models.User;
 import com.example.demo.Models.Post.Comment;
@@ -24,16 +23,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
-	@Autowired
+    @Autowired
     private PostRepository postRepo;
 
-	@Autowired
-	private UserRepository userRepo;
-	
-	@Autowired
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
     private LikeRepository likeRepo;
-	
-	@Autowired
+
+    @Autowired
     private CommentRepository commentRepo;
 
     @Override
@@ -46,25 +45,25 @@ public class PostServiceImpl implements PostService {
         return postRepo.save(post);
     }
 
-//    @Override
-//    public List<Post> getFeedPosts() {
-//        return postRepo.findAllByOrderByCreatedAtDesc();
-//    }
+    @Override
+    public List<Post> getFeedPosts() {
+        return postRepo.findAllByOrderByCreatedAtDesc();
+    }
 
     @Override
     public Long likePost(Long postId, Long userId) {
         Post post = postRepo.findById(postId).orElseThrow(()->new RuntimeException("Post not found!"));
         User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException("User NOT Found!"));
         if (likeRepo.existsByPostAndUser(post, user))
-        	return -1L;
-        
+            return -1L;
+
         Like like = new Like();
         like.setPost(post);
         like.setUser(user);
         like.setLikedAt(LocalDateTime.now());
-        
+
         Like saved = likeRepo.save(like);
-        return saved.getId(); 
+        return saved.getId();
     }
 
     @Override
@@ -89,4 +88,3 @@ public class PostServiceImpl implements PostService {
         postRepo.delete(post);
     }
 }
-

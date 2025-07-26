@@ -21,9 +21,9 @@ public class ConnectionController {
     @Autowired
     private ConnectionService connectionService;
 
-    @PostMapping("/send")
+    @PostMapping("/{userId}/send")
     public ResponseEntity<String> sendRequest(@RequestBody ConnectionRequestDTO request,
-                                              @RequestHeader("userId") Long senderId) {
+                                              @RequestHeader @PathVariable("userId") Long senderId) {
         connectionService.sendConnectionRequest(senderId, request.getReceiverId());
         return ResponseEntity.ok("Connection request sent");
     }
@@ -35,13 +35,13 @@ public class ConnectionController {
         return ResponseEntity.ok(accept ? "Request accepted" : "Request rejected");
     }
 
-    @GetMapping("/pending")
-    public List<ConnectionResponseDTO> getPending(@RequestHeader("userId") Long userId) {
+    @GetMapping("/{userId}/pending")
+    public List<ConnectionResponseDTO> getPending(@RequestHeader @PathVariable("userId") Long userId) {
         return connectionService.getPendingRequests(userId);
     }
 
-    @GetMapping("/accepted")
-    public List<ConnectionResponseDTO> getConnections(@RequestHeader("userId") Long userId) {
+    @GetMapping("/{userId}/accepted")
+    public List<ConnectionResponseDTO> getConnections(@RequestHeader @PathVariable("userId") Long userId) {
         return connectionService.getConnections(userId);
     }
 }

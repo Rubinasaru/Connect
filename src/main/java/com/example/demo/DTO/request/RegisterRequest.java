@@ -16,6 +16,10 @@ public class RegisterRequest {
 	@JsonProperty("Username")
     private String username;
 	@JsonProperty("Password")
+	@Pattern(
+			regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$",
+			message = "Password must be at least 8 characters and include a number, an uppercase, a lowercase, and a special character"
+	)
     private String password;
 	
 //	@Enumerated(EnumType.STRING)

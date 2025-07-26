@@ -33,10 +33,10 @@ public class ChangePasswordDTO {
 	            message = "Confirm new password must contain at least one uppercase letter, one special character, and one number!"
 	    )
 	    @Schema(example = "string")
-	    private String confirmNewPassword;
+	    private String confirmPassword;
 
 	    public boolean isPasswordMatch() {
-	        return newPassword != null && newPassword.equals(confirmNewPassword);
+	        return newPassword != null && newPassword.equals(confirmPassword);
 	    }
 
 		public String getOldPassword() {
@@ -55,12 +55,12 @@ public class ChangePasswordDTO {
 			this.newPassword = newPassword;
 		}
 
-		public String getConfirmNewPassword() {
-			return confirmNewPassword;
+		public String getConfirmPassword() {
+			return confirmPassword;
 		}
 
-		public void setConfirmNewPassword(String confirmNewPassword) {
-			this.confirmNewPassword = confirmNewPassword;
+		public void setConfirmPassword(String confirmNewPassword) {
+			this.confirmPassword = confirmPassword;
 		}
 		
 }

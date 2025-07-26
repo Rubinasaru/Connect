@@ -29,15 +29,15 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    
+
     @Value("${spring.app.jwtExpirationMs}")
     private int jwtExpirationMs;
-    
+
     private Key key() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
-    
-//    public String generateToken(String subject) {
+
+    //    public String generateToken(String subject) {
 //        return Jwts.builder()
 //            .setSubject(subject)
 //            .setIssuedAt(new Date())
@@ -45,31 +45,31 @@ public class JwtService {
 //            .signWith(key())
 //            .compact();
 //    }
-public String generateToken(User user) {
-    UserProfile profile = user.getProfile();  // Fetch the linked profile
+    public String generateToken(User user) {
+        UserProfile profile = user.getProfile();  // Fetch the linked profile
 
-    Map<String, Object> claims = new HashMap<>();
-    claims.put("username", user.getUsername());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", user.getUsername());
 
-    if (profile != null) {
-        claims.put("email", profile.getEmail());
-        claims.put("firstName", profile.getFirstName());
-        claims.put("lastName", profile.getLastName());
-        claims.put("fullName", profile.getFirstName() + " " + profile.getLastName());
-        claims.put("role", profile.getRole());
-        claims.put("department", profile.getDepartment());
-        claims.put("interest", profile.getInterest());
-        claims.put("profileImgUrl", profile.getProfileImgUrl());
+        if (profile != null) {
+            claims.put("email", profile.getEmail());
+            claims.put("firstName", profile.getFirstName());
+            claims.put("lastName", profile.getLastName());
+            claims.put("fullName", profile.getFirstName() + " " + profile.getLastName());
+            claims.put("role", profile.getRole());
+            claims.put("department", profile.getDepartment());
+            claims.put("interest", profile.getInterest());
+            claims.put("profileImgUrl", profile.getProfileImgUrl());
+        }
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getUsername()) // or user.getUsername()
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 1 day
+                .signWith(key())
+                .compact();
     }
-
-    return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(user.getUsername()) // or user.getUsername()
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 1 day
-            .signWith(key())
-            .compact();
-}
 
 
     public String getJwtFromHeader(HttpServletRequest request){
@@ -92,14 +92,14 @@ public String generateToken(User user) {
                 .signWith(key()) // Sign the token using the secret key
                 .compact();
     }
-    
+
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject(); // ✅ this extracts the username (subject) from the token
+                .getSubject();
     }
 
 

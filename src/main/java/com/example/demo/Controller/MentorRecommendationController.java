@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recommendations")
+@RequestMapping("/api/v1/recommendations")
 @Tag(name = "Mentor Recommendation Controller", description = "Recommendation related information")
 @RequiredArgsConstructor
 public class MentorRecommendationController {

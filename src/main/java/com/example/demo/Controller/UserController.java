@@ -43,21 +43,21 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/user")
 @Tag(name="User Controller",description="User related information")
 public class UserController {
-	
-	@Autowired
-    private UserService userService;
-	
-	@Autowired
-	private UserProfileService userProfileService;
 
-	private FileValidator fileValidator;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserProfileService userProfileService;
+
+    private FileValidator fileValidator;
 
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
     private UserRepository userRepository;
-    
+
     //Set up the user Profile with other informations
 
 
@@ -122,7 +122,7 @@ public class UserController {
 //        String email = principal.getName(); // From JWT Auth
 //        return ResponseEntity.ok(ResponseObject.success("Profile updated successfully!", userService.setupProfile(email, request)));
 //    }
-    
+
     //Update the user information in Profile
 //    @PutMapping("updateUserDetails/{id}")
 //    @Operation(summary = "Update user details")
@@ -130,7 +130,7 @@ public class UserController {
 //        UserDTO updatedUser = userService.updateUserDetails(id, userDTO);
 //        return ResponseEntity.ok(ResponseObject.success("User details updated successfully!", updatedUser));
 //    }
-    
+
     @PostMapping("/verifyEmail")
     @Operation(summary = "Verify email with OTP")
     public ResponseEntity<ResponseObject> verifyEmail(@Valid @RequestBody OtpVerificationRequest otpVerificationRequest) throws Exception {
@@ -139,8 +139,8 @@ public class UserController {
                 ResponseObject.success("Email verified successfully!", null)
         );
     }
-    
-    
+
+
 //    @PutMapping(value = "/{userId}/profileImage", consumes = "multipart/form-data")
 //    @Operation(summary = "Upload or update user profile image")
 //    public ResponseEntity<ResponseObject> updateUserProfileImage(
@@ -153,4 +153,3 @@ public class UserController {
 //    }
 //
 }
-

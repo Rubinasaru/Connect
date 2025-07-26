@@ -1,6 +1,8 @@
 package com.example.demo.Service;
 
+import jakarta.xml.bind.SchemaOutputResolver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,7 +71,6 @@ public class AuthenticationService {
 //                AuthProvider.LOCAL
         );
     }
-
     @Transactional
     public UserInfoResponse login(LoginRequest loginRequest){
         // Check if user exists and email is verified
@@ -82,7 +83,7 @@ public class AuthenticationService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String jwtToken = jwtService.generateTokenFromUsername(userDetails);
+            String jwtToken = jwtService.generateToken(user);
             return new UserInfoResponse(jwtToken, userDetails.getUsername());
         } catch (BadCredentialsException e) {
             throw new IllegalArgumentException("Invalid username or password!");
@@ -90,7 +91,9 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Authentication failed: " + e.getMessage() + "!");
         }
     }
-    
+
+
+
 //    @Transactional
 //    public void resetPassword(ResetPasswordDTO dto) {
 //        if (dto == null || dto.getEmail() == null || dto.getNewPassword() == null || dto.getConfirmNewPassword() == null) {
@@ -121,6 +124,43 @@ public class AuthenticationService {
         UserProfile user = profileRepository.findByEmail(otpRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + otpRequest.getEmail() + "!"));
         otpService.sendOtpEmail(otpRequest.getEmail());
+    }
+
+    public void resetPassword(ResetPasswordDTO request) {
+
+        if(request == null){
+            System.out.println("Request is null");
+        }
+
+        if(request.getUsername() == null){
+            System.out.println("Username is null");
+        }
+
+        if(request.getNewPassword() == null){
+            System.out.println("new passwrsed is null");
+        }
+
+        if(request.getConfirmPassword() == null){
+            System.out.println("confirm password is null");
+        }
+
+
+
+        if(!request.isPasswordMatch()){
+            throw new IllegalArgumentException("New password and Confirm new password does not match!");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("New password and confirm password must match!");
+        }
+        if (!otpService.verifyOtp(request.getUsername(), request.getOtp())) {
+            throw new IllegalArgumentException("Invalid or expired OTP!");
+        }
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Username (" + request.getUsername() + ") is not registered!"));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        System.out.println("Password reset successfully for: " + request.getUsername() + "!");
     }
 }
 
