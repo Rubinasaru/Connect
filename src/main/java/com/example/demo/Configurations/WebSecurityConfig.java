@@ -73,6 +73,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/api/v1/user/setupprofile").authenticated()
                         .anyRequest().authenticated()
                 )
               
@@ -106,11 +107,10 @@ public class WebSecurityConfig {
 
     // Constants for endpoints
     private static final String[] PUBLIC_ENDPOINTS = {
-            "api/v1/**",
+            "/api/v1/**",
     		"/api/v1/admin/**",
             "/api/v1/auth/**",
-            "/api/v1/user/**",
-            "api/v1/user/setupprofile",
+            "api/v1/user/**",
             "/api/v1/posts/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",

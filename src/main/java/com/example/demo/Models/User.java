@@ -24,51 +24,51 @@ import lombok.Data;
 @AllArgsConstructor
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    
-    @Column(unique = true)
-    @JsonProperty("Username")
-    private String username;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
-    @Column(nullable = false)
-    @JsonProperty("Password")
-    private String password;
-    
+	@Column(unique = true)
+	@JsonProperty("Username")
+	private String username;
+
+	@Column(nullable = false)
+	@JsonProperty("Password")
+	private String password;
+
 //    @Enumerated(EnumType.STRING)
 //    private AuthProvider provider;
-    
+
 	private Boolean profileCompleted = false;
 
-    // One-to-one relationship with UserProfile
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserProfile profile;
+	// One-to-one relationship with UserProfile
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private UserProfile profile;
 
-    // Timestamp
-    private LocalDate createdAt = LocalDate.now();
-	
-    public User(String username, String password) {     //,AuthProvider provider
-        this.username = username;
-        this.password = password;
+	// Timestamp
+	private LocalDate createdAt = LocalDate.now();
+
+	public User(String username, String password) {     //,AuthProvider provider
+		this.username = username;
+		this.password = password;
 //        this.provider=provider;
-    }
-    
+	}
+
 	public void build() {
-		
+
 	}
-	
+
 	public User() {
-		
+
 	}
-	
+
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -83,7 +83,7 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 //	 public AuthProvider getProvider() {
 //			return provider;
 //	}
@@ -91,7 +91,7 @@ public class User {
 //	public void setProvider(AuthProvider provider) {
 //			this.provider = provider;
 //	}
-		
+
 	public Boolean getProfileCompleted() {
 		return profileCompleted;
 	}
@@ -110,5 +110,5 @@ public class User {
 	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
 	}
-	
+
 }

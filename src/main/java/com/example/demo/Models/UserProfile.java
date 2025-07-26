@@ -11,56 +11,48 @@ import java.util.List;
 @Entity
 public class UserProfile {
 	@Id
-    private Long id; // Same as user ID
+	private Long id; // Same as user ID
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+	@OneToOne
+	@MapsId
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
+	private User user;
 
-    @Column(nullable= false)
-    @JsonProperty("First Name")
-    private String firstName;
-    
-    @Column(nullable= true)
-    @JsonProperty("Middle Name")
-    private String middleName;
-    
-    @Column(nullable= false)
-    @JsonProperty("Last Name")
-    private String lastName;
-    
-    @Column(unique=true,nullable= false)
-    @JsonProperty("Email")
-    private String email;
-    
-    @Column(name = "is_email_verified", nullable = false)
-    private boolean isEmailVerified = false;
-  
-    
-    @Column(nullable= false)
-    @JsonProperty("Department")
-    private String department;
-    
-    @Column(nullable= false)
-    @JsonProperty("Interest")
+	@Column(nullable= false)
+	private String firstName;
+
+	@Column(nullable= true)
+	private String middleName;
+
+	@Column(nullable= false)
+	private String lastName;
+
+	@Column(unique=true,nullable= false)
+	private String email;
+
+	@Column(name = "is_email_verified", nullable = false)
+	private boolean isEmailVerified = false;
+
+
+	@Column(nullable= false)
+	private String department;
+
+	@Column(nullable= false)
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> interest;
-    
-    @Column(nullable= false)
-    @JsonProperty("Role")
-    private UserType role;
+
+	@Column(nullable= false)
+	private UserType role;
 
 	@Column(length = 1000)
-	@JsonProperty("Profile Img Url")
-    private String profileImgUrl;
-    
-    public UserProfile(){
-    	
-    }
-    
-    public Long getId() {
+	private String profileImgUrl;
+
+	public UserProfile(){
+
+	}
+
+	public Long getId() {
 		return id;
 	}
 
@@ -162,7 +154,7 @@ public class UserProfile {
 	public void setProfileImgUrl(String profileImgUrl) {
 		this.profileImgUrl = profileImgUrl;
 	}
-	
+
 	public UserProfile(String firstName,String middleName,String lastName,String email,String department,List<String> interest,String profileImgUrl) {
 		this.firstName=firstName;
 		this.middleName=middleName;

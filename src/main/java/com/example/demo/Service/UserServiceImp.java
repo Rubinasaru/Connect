@@ -26,13 +26,13 @@ public class UserServiceImp implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Autowired
     private FileService FileService;
 
@@ -50,11 +50,11 @@ public class UserServiceImp implements UserService {
         userRepository.save(user);
         return dto;
     }
-    
+
     @Override
     public UserProfile setupProfile(String username, ProfileSetupRequest request) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (profileRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email (" + request.getEmail() + ") is already in use!");
@@ -111,33 +111,33 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public UserDTO updateUserDetails(Long id, UserDTO dto) {
-    	    User user = userRepository.findById(id)
-    	        .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
 
-    	    // Update User entity
-    	    user.setUsername(dto.getUsername());
+        // Update User entity
+        user.setUsername(dto.getUsername());
 
-    	    // Update UserProfile entity
-    	    UserProfile profile = user.getProfile();
-    	    if (profile == null) {
-    	        profile = new UserProfile();
-    	        profile.setUser(user); 
-    	    }
+        // Update UserProfile entity
+        UserProfile profile = user.getProfile();
+        if (profile == null) {
+            profile = new UserProfile();
+            profile.setUser(user);
+        }
 
-    	    profile.setEmail(dto.getEmail());
-    	    profile.setFirstName(dto.getFirstName());
-    	    profile.setMiddleName(dto.getMiddleName());
-            profile.setLastName(dto.getLastName());
-            profile.setRole(dto.getRole());
-    	    profile.setDepartment(dto.getDepartment());
-    	    profile.setProfileImgUrl(dto.getProfileImgUrl());
+        profile.setEmail(dto.getEmail());
+        profile.setFirstName(dto.getFirstName());
+        profile.setMiddleName(dto.getMiddleName());
+        profile.setLastName(dto.getLastName());
+        profile.setRole(dto.getRole());
+        profile.setDepartment(dto.getDepartment());
+        profile.setProfileImgUrl(dto.getProfileImgUrl());
 
-    	    user.setProfile(profile); 
-    	    userRepository.save(user); 
+        user.setProfile(profile);
+        userRepository.save(user);
 
-    	    return mapToDTO(user);
-    	}
+        return mapToDTO(user);
+    }
 
     @Override
     public UserDTO updateUserRoles(Long userId, UserType roles) {
@@ -150,7 +150,7 @@ public class UserServiceImp implements UserService {
     public UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file) {
         UserProfile profile = profileRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
         try {
-        	String fileName = FileService.uploadImage(filePath, file);
+            String fileName = FileService.uploadImage(filePath, file);
             profile.setProfileImgUrl(fileName);
         } catch (IOException e) {
             throw new RuntimeException("Could not store image", e);
@@ -178,18 +178,18 @@ public class UserServiceImp implements UserService {
 
         return dto;
     }
-    
+
     private UserDTO mapToDTO(UserProfile profile) {
-    	UserDTO dto= new UserDTO();
-            dto.setEmail(profile.getEmail());
-            dto.setDepartment(profile.getDepartment());
-            dto.setInterest(profile.getInterest().toString());
-            dto.setRole(profile.getRole());
-            dto.setFirstName(profile.getFirstName());
-            dto.setMiddleName(profile.getMiddleName());
-            dto.setLastName(profile.getLastName());
-            dto.setProfileImgUrl(profile.getProfileImgUrl());
+        UserDTO dto= new UserDTO();
+        dto.setEmail(profile.getEmail());
+        dto.setDepartment(profile.getDepartment());
+        dto.setInterest(profile.getInterest().toString());
+        dto.setRole(profile.getRole());
+        dto.setFirstName(profile.getFirstName());
+        dto.setMiddleName(profile.getMiddleName());
+        dto.setLastName(profile.getLastName());
+        dto.setProfileImgUrl(profile.getProfileImgUrl());
         return dto;
     }
 
-} 
+}

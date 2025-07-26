@@ -14,56 +14,56 @@ import lombok.Data;
 @Data
 public class UserDTO {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private Long id;
+	private Long id;
 
-    @NotBlank(message = "Email is required!")
-    @Email(message = "Should be of type email!")
-    private String Email;
+	@NotBlank(message = "Email is required!")
+	@Email(message = "Should be of type email!")
+	private String Email;
 
-    @NotBlank(message = "Username is required!")
-    @Size(min = 3, max = 20, message = "Username must contain minimum 3 characters and maximum 20 characters!")
-    @JsonProperty("Username")
-    private String username;
-    
-    @Column(nullable = false)
+	@NotBlank(message = "Username is required!")
+	@Size(min = 3, max = 20, message = "Username must contain minimum 3 characters and maximum 20 characters!")
+	@JsonProperty("Username")
+	private String username;
+
+	@Column(nullable = false)
 	@Pattern(
 			regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$",
 			message = "Password must be at least 8 characters and include a number, an uppercase, a lowercase, and a special character"
 	)
-    @JsonProperty("Password")
-    private String password;
+	@JsonProperty("Password")
+	private String password;
 
 	@NotBlank(message = "Firstname is required!")
 	@JsonProperty("First Name")
-    private String FirstName;
-	
+	private String FirstName;
+
 	@Column(nullable= true)
 	@JsonProperty("Middle Name")
-    private String MiddleName;
-	
+	private String MiddleName;
+
 	@NotBlank(message = "Lastname is required!")
 	@JsonProperty("Last Name")
-    private String LastName;
-    
-    @NotBlank(message = "Department is required!")
-    private String Department;
-    
-    @NotBlank(message = "Interest is required!")
-    private String Interest;
-    
-    private UserType Role; 
-    
-    @Schema(example = "string")
+	private String LastName;
+
+	@NotBlank(message = "Department is required!")
+	private String Department;
+
+	@NotBlank(message = "Interest is required!")
+	private String Interest;
+
+	private UserType Role;
+
+	@Schema(example = "string")
 	@Pattern(
 			regexp = "^(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png|jpeg)$",
 			message = "Invalid image URL format"
 	)
 	@JsonProperty("Profile Image URL")
-    private String ProfileImgUrl;
-    
-    private Boolean ProfileCompleted=false;
-    
-    public Boolean getProfileCompleted() {
+	private String ProfileImgUrl;
+
+	private Boolean ProfileCompleted=false;
+
+	public Boolean getProfileCompleted() {
 		return ProfileCompleted;
 	}
 
@@ -72,12 +72,12 @@ public class UserDTO {
 	}
 
 	public long getId() {
- 		return id;
- 	}
+		return id;
+	}
 
- 	public void setId(long id) {
- 		this.id = id;
- 	}
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getEmail() {
 		return Email;
@@ -134,8 +134,8 @@ public class UserDTO {
 	public void setDepartment(String department) {
 		Department = department;
 	}
-	
-	
+
+
 
 	public String getInterest() {
 		return Interest;
