@@ -49,5 +49,6 @@ public class SwaggerConfig {
 	                                        .name("Authorization")
 	                        )
 	                );
+
 	    }
 }

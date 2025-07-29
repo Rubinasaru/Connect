@@ -102,6 +102,15 @@ public class JwtService {
                 .getSubject();
     }
 
+    public String getEmailFromJwtToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email", String.class);
+    }
+
 
     public boolean validateJwtToken(String authToken) {
         try {

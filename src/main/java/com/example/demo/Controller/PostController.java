@@ -3,12 +3,20 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.request.NotificationDTO;
 import com.example.demo.DTO.request.Post.CommentRequestDTO;
 import com.example.demo.DTO.request.Post.LikeRequestDTO;
+import com.example.demo.DTO.response.PostResponse;
 import com.example.demo.Models.Post.Comment;
+import com.example.demo.Models.Post.Post;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.CommentRepository;
 import com.example.demo.Repository.UserRepository;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +27,11 @@ import com.example.demo.Service.Post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -40,16 +51,25 @@ public class PostController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/{userId}")
-    @Operation(summary="Post Created by users")
-    public ResponseEntity<ResponseObject> createPost(@RequestBody PostRequestDTO dto,@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(ResponseObject.success("Post created successfully!", postService.createPost(dto, userId)));
-    }
+//    @PostMapping("/{userId}")
+//    @Operation(summary="Post Created by users")
+//    public ResponseEntity<ResponseObject> createPost(@RequestBody PostRequestDTO dto,@PathVariable("userId") Long userId) {
+//        return ResponseEntity.ok(ResponseObject.success("Post created successfully!", postService.createPost(dto, userId)));
+//    }
+@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<PostResponse> createPost(
+        @RequestPart("content") String content,
+        @RequestPart(value = "file", required = false) MultipartFile file,
+        @RequestHeader("Authorization") String token) throws IOException {
 
-    @GetMapping("/")
+    PostResponse postDTO = postService.createPost(content, file, token);
+    return ResponseEntity.ok(postDTO);
+}
+
+    @GetMapping("/feed")
     @Operation(summary="Get all the Feeds")
-    public ResponseEntity<ResponseObject> getFeed() {
-        return ResponseEntity.ok(ResponseObject.success("fetched all the posts",postService.getFeedPosts()));
+    public ResponseEntity<List<Post>> getFeedPosts(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(postService.getFeedPosts());
     }
 
     @PostMapping("/like")

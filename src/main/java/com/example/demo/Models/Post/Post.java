@@ -24,8 +24,11 @@ public class Post {
 
 	private String content;
 
-	@Enumerated(EnumType.STRING)
-	private PostType type;
+	private String mediaUrl; // store path to image/video
+	private String mediaType; // "image" or "video"
+
+//	@Enumerated(EnumType.STRING)
+//	private PostType type;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -49,12 +52,29 @@ public class Post {
 		this.content = content;
 	}
 
-	public PostType getType() {
-		return type;
+//	public PostType getType() {
+//		return type;
+//	}
+//
+//	public void setType(PostType type) {
+//		this.type = type;
+//	}
+
+
+	public String getMediaUrl() {
+		return mediaUrl;
 	}
 
-	public void setType(PostType type) {
-		this.type = type;
+	public void setMediaUrl(String mediaUrl) {
+		this.mediaUrl = mediaUrl;
+	}
+
+	public String getMediaType() {
+		return mediaType;
+	}
+
+	public void setMediaType(String mediaType) {
+		this.mediaType = mediaType;
 	}
 
 	public User getUser() {
