@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.example.demo.DTO.response.UserInfoResponse;
 import com.example.demo.Models.User;
 import com.example.demo.Models.UserProfile;
 import com.example.demo.Repository.ProfileRepository;
 import com.example.demo.Repository.UserRepository;
+import com.example.demo.Service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.DTO.request.OtpVerificationRequest;
@@ -46,20 +42,25 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserProfileService userProfileService;
 
     private FileValidator fileValidator;
-
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtService jwtService;
+
     //Set up the user Profile with other informations
 
+    @GetMapping
+    public ResponseEntity<ResponseObject> getAllUsers(){
+                return ResponseEntity.ok(ResponseObject.success("All users are fetched.",userService.getAllUsers()));
+    }
 
     @PutMapping("/setupprofile")
     public ResponseEntity<ResponseObject> setupProfile(
@@ -67,14 +68,14 @@ public class UserController {
             @Valid @RequestBody ProfileSetupRequest request) {
 
         // Fallback for userDetails if null
-//        if (userDetails == null) {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                        .body(ResponseObject.failure("Unauthorized: Could not extract user details from token."));
-//            }
-//            userDetails = (UserDetails) authentication.getPrincipal();
-//        }
+        if (userDetails == null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ResponseObject.failure("Unauthorized: Could not extract user details from token."));
+            }
+            userDetails = (UserDetails) authentication.getPrincipal();
+        }
 
         String username = userDetails.getUsername();
 
@@ -94,13 +95,12 @@ public class UserController {
         existingProfile.setUser(user); // link the user if new profile
 
         // Allow the same user to reuse their own email
-        if (!request.getEmail().equalsIgnoreCase(existingProfile.getEmail())
-                && profileRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.ok(ResponseObject.failure("Email (" + request.getEmail() + ") is already in use!"));
-        }
+//        if (!request.getUsername().equalsIgnoreCase(existingProfile.getUsername())
+//                && userRepository.existsByUsername(request.getUsername())) {
+//            return ResponseEntity.ok(ResponseObject.failure("Username (" + request.getUsername() + ") is already in use!"));
+//        }
 
         // Update profile fields
-        existingProfile.setEmail(request.getEmail());
         existingProfile.setRole(request.getRole());
         existingProfile.setFirstName(request.getFirstName());
         existingProfile.setLastName(request.getLastName());
@@ -109,10 +109,17 @@ public class UserController {
         existingProfile.setInterest(new ArrayList<>(request.getInterest()));
         existingProfile.setProfileImgUrl(request.getProfileImgUrl());
 
-        profileRepository.save(existingProfile);
 
+        existingProfile.setUser(user);
+
+        user.setProfileCompleted();
+        user.setProfile(existingProfile);
+        userRepository.save(user);
+
+        String updatedToken = jwtService.generateToken(user);
+        System.out.println(jwtService.decodeJWT(updatedToken));
         return ResponseEntity.ok(
-                ResponseObject.success("Profile updated successfully!", existingProfile)
+                ResponseObject.success("Profile setup sucessfully", new UserInfoResponse(updatedToken,userDetails.getUsername()))
         );
     }
 
@@ -139,6 +146,7 @@ public class UserController {
                 ResponseObject.success("Email verified successfully!", null)
         );
     }
+
 
 
 //    @PutMapping(value = "/{userId}/profileImage", consumes = "multipart/form-data")

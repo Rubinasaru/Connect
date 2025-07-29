@@ -7,10 +7,7 @@ import lombok.Data;
 @Data
 public class ResetPasswordDTO {
 
-	private String username;
-
-	private String otp;
-
+	private String email;
 	@Size(min = 6, max = 100)
 	private String newPassword;
 
@@ -19,4 +16,5 @@ public class ResetPasswordDTO {
 	public boolean isPasswordMatch() {
 		return newPassword != null && newPassword.equals(confirmPassword);
 	}
+
 }

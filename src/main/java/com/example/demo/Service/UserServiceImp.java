@@ -2,7 +2,10 @@ package com.example.demo.Service;
 
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,16 +59,11 @@ public class UserServiceImp implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (profileRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email (" + request.getEmail() + ") is already in use!");
-        }
-
         if (user.getProfile() != null) {
             throw new IllegalStateException("Profile already exists for this user.");
         }
         UserProfile profile = new UserProfile();
         profile.setUser(user);
-        profile.setEmail(request.getEmail());
         profile.setDepartment(request.getDepartment());
         profile.setInterest(request.getInterest());
         profile.setRole(request.getRole());
@@ -74,7 +72,6 @@ public class UserServiceImp implements UserService {
         profile.setLastName(request.getLastName());
         profile.setProfileImgUrl(request.getProfileImgUrl());
 
-        user.setProfileCompleted(true);
         user.setProfile(profile);
 
         profileRepository.save(profile);
@@ -83,13 +80,13 @@ public class UserServiceImp implements UserService {
     }
 
 
-//    @Override
-//    public List<UserDTO> getAllUsers() {
-//    	 List<User> users = userRepository.findAll();
-//    	    return users.stream()
-//    	                .map(this::mapToDTO)
-//    	                .collect(Collectors.toList());
-//    }
+    @Override
+    public List<UserDTO> getAllUsers() {
+    	 List<User> users = userRepository.findAll();
+    	    return users.stream()
+    	                .map(this::mapToDTO)
+    	                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -116,6 +113,7 @@ public class UserServiceImp implements UserService {
 
 
         // Update User entity
+        user.setEmail(dto.getEmail());
         user.setUsername(dto.getUsername());
 
         // Update UserProfile entity
@@ -125,13 +123,13 @@ public class UserServiceImp implements UserService {
             profile.setUser(user);
         }
 
-        profile.setEmail(dto.getEmail());
         profile.setFirstName(dto.getFirstName());
         profile.setMiddleName(dto.getMiddleName());
         profile.setLastName(dto.getLastName());
         profile.setRole(dto.getRole());
         profile.setDepartment(dto.getDepartment());
         profile.setProfileImgUrl(dto.getProfileImgUrl());
+        profile.setInterest(Collections.singletonList(dto.getInterest()));
 
         user.setProfile(profile);
         userRepository.save(user);
@@ -163,10 +161,10 @@ public class UserServiceImp implements UserService {
 
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
 
         if (profile != null) {
-            dto.setEmail(profile.getEmail());
             dto.setFirstName(profile.getFirstName());
             dto.setMiddleName(profile.getMiddleName());
             dto.setLastName(profile.getLastName());
@@ -181,7 +179,6 @@ public class UserServiceImp implements UserService {
 
     private UserDTO mapToDTO(UserProfile profile) {
         UserDTO dto= new UserDTO();
-        dto.setEmail(profile.getEmail());
         dto.setDepartment(profile.getDepartment());
         dto.setInterest(profile.getInterest().toString());
         dto.setRole(profile.getRole());

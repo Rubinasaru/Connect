@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +26,10 @@ public class User {
 	private long id;
 
 	@Column(unique = true)
+	@JsonProperty("Email")
+	private String email;
+
+	@Column(unique = true)
 	@JsonProperty("Username")
 	private String username;
 
@@ -35,10 +37,13 @@ public class User {
 	@JsonProperty("Password")
 	private String password;
 
+	@Column(name = "is_email_verified", nullable = false)
+	private boolean isEmailVerified = false;
+
+	private boolean isProfileCompleted=false;
+
 //    @Enumerated(EnumType.STRING)
 //    private AuthProvider provider;
-
-	private Boolean profileCompleted = false;
 
 	// One-to-one relationship with UserProfile
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -47,9 +52,11 @@ public class User {
 	// Timestamp
 	private LocalDate createdAt = LocalDate.now();
 
-	public User(String username, String password) {     //,AuthProvider provider
+	public User(String email,String username, String password) {     //,AuthProvider provider
+		this.email = email;
 		this.username = username;
 		this.password = password;
+		this.isEmailVerified = false;
 //        this.provider=provider;
 	}
 
@@ -68,6 +75,14 @@ public class User {
 		this.id = id;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -83,6 +98,14 @@ public class User {
 		this.password = password;
 	}
 
+	public boolean isEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setEmailVerified(boolean isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+
 //	 public AuthProvider getProvider() {
 //			return provider;
 //	}
@@ -90,13 +113,6 @@ public class User {
 //	public void setProvider(AuthProvider provider) {
 //			this.provider = provider;
 //	}
-
-	public Boolean getProfileCompleted() {
-		return profileCompleted;
-	}
-	public void setProfileCompleted(Boolean profileCompleted) {
-		this.profileCompleted = profileCompleted;
-	}
 	public UserProfile getProfile() {
 		return profile;
 	}
@@ -110,4 +126,11 @@ public class User {
 		this.createdAt = createdAt;
 	}
 
+	public boolean isProfileCompleted() {
+		return isProfileCompleted;
+	}
+
+	public void setProfileCompleted() {
+		isProfileCompleted = true;
+	}
 }

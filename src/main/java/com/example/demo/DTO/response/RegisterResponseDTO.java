@@ -9,12 +9,15 @@ import lombok.Setter;
 @Hidden
 public class RegisterResponseDTO {
     private Long id;
-    private String Username;
+    private String Email;
+
+	private String Username;
     private String Password;
 
     public RegisterResponseDTO(User user) {
         this.id = user.getId();
-        this.Username = user.getUsername();
+        this.Email = user.getEmail();
+		this.Username= user.getUsername();
         this.Password = user.getPassword();
     }
 
@@ -24,6 +27,14 @@ public class RegisterResponseDTO {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getEmail() {
+		return Email;
+	}
+
+	public void setEmail(String email) {
+		Email = email;
 	}
 
 	public String getUsername() {

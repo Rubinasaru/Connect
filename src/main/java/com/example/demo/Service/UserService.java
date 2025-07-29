@@ -11,6 +11,8 @@ import com.example.demo.Models.UserProfile;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @Service
 public interface UserService {
 		
@@ -18,7 +20,7 @@ public interface UserService {
 	    
 	   UserProfile setupProfile(String username, ProfileSetupRequest request);
 
-//	    List<UserDTO> getAllUsers();
+	    List<UserDTO> getAllUsers();
 
 		UserDTO getUserById(Long id);
 

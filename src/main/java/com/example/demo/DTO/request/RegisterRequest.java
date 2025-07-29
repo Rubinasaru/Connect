@@ -12,14 +12,14 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
 
-	@Column(unique = true)
+	@Column(unique = true,nullable = false)
+	@JsonProperty("Email")
+    private String email;
+
+	@Column(unique = true,nullable = false)
 	@JsonProperty("Username")
-    private String username;
+	private String username;
 	@JsonProperty("Password")
-	@Pattern(
-			regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$",
-			message = "Password must be at least 8 characters and include a number, an uppercase, a lowercase, and a special character"
-	)
     private String password;
 	
 //	@Enumerated(EnumType.STRING)
@@ -31,12 +31,23 @@ public class RegisterRequest {
 //	public void setProvider(AuthProvider provider) {
 //		this.provider = provider;
 //	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getPassword() {
 		return password;
 	}

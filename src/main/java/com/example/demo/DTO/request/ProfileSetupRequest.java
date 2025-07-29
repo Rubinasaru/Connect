@@ -13,11 +13,6 @@ import java.util.List;
 
 @Data
 public class ProfileSetupRequest {
-	@NotBlank(message = "Email is required!")
-	@jakarta.validation.constraints.Email(message = "Should be of type email!")
-	@Schema(example = "string")
-	private String Email;
-
 	@NotBlank(message = "Firstname is required!")
 	@Pattern(regexp = "^[A-Za-z]+$", message = "First name must contain only letters")
 	@Schema(example = "string")
@@ -40,10 +35,6 @@ public class ProfileSetupRequest {
 	)
 	private String ProfileImgUrl;
 
-
-	public String getEmail() {
-		return Email;
-	}
 	public String getFirstName() {
 		return FirstName;
 	}
@@ -89,8 +80,6 @@ public class ProfileSetupRequest {
 	public void setProfileImgUrl(String profileImgUrl) {
 		ProfileImgUrl = profileImgUrl;
 	}
-	public void setEmail(String email) {
-		Email = email;
-	}
+
 
 }

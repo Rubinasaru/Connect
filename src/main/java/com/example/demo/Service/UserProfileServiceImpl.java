@@ -1,5 +1,7 @@
 package com.example.demo.Service;
 
+import com.example.demo.Models.User;
+import com.example.demo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class UserProfileServiceImpl implements UserProfileService{
 	@Autowired
-	private ProfileRepository profileRepository;
+	private UserRepository userRepository;
 
 	@Autowired
 	private otpService otpService;
@@ -22,7 +24,7 @@ public class UserProfileServiceImpl implements UserProfileService{
     @Transactional
     public void verifyEmail(OtpVerificationRequest otpVerificationRequest) throws Exception {
         // Check if user exists first
-        UserProfile user = profileRepository.findByEmail(otpVerificationRequest.getEmail())
+        User user = userRepository.findByEmail(otpVerificationRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + otpVerificationRequest.getEmail() + "!"));
 
         // Check if email is already verified
@@ -37,7 +39,7 @@ public class UserProfileServiceImpl implements UserProfileService{
 
         // Update user verification status
         user.setEmailVerified(true);
-        profileRepository.save(user);
+        userRepository.save(user);
     }
 
 }

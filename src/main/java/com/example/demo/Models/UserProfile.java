@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.List;
 
 @Entity
+@Table(name = "user_profile")
+@Data
 public class UserProfile {
 	@Id
 	private Long id; // Same as user ID
@@ -27,13 +30,6 @@ public class UserProfile {
 
 	@Column(nullable= false)
 	private String lastName;
-
-	@Column(unique=true,nullable= false)
-	private String email;
-
-	@Column(name = "is_email_verified", nullable = false)
-	private boolean isEmailVerified = false;
-
 
 	@Column(nullable= false)
 	private String department;
@@ -101,25 +97,6 @@ public class UserProfile {
 		this.lastName = lastName;
 	}
 
-
-	public String getEmail() {
-		return email;
-	}
-
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-
-	public boolean isEmailVerified() {
-		return isEmailVerified;
-	}
-
-	public void setEmailVerified(boolean isEmailVerified) {
-		this.isEmailVerified = isEmailVerified;
-	}
-
 	public String getDepartment() {
 		return department;
 	}
@@ -155,15 +132,13 @@ public class UserProfile {
 		this.profileImgUrl = profileImgUrl;
 	}
 
-	public UserProfile(String firstName,String middleName,String lastName,String email,String department,List<String> interest,String profileImgUrl) {
+	public UserProfile(String firstName,String middleName,String lastName,String department,List<String> interest,String profileImgUrl) {
 		this.firstName=firstName;
 		this.middleName=middleName;
 		this.lastName=lastName;
-		this.email=email;
 		this.department=department;
 		this.interest=interest;
 		this.profileImgUrl=profileImgUrl;
-		this.isEmailVerified=false;
 	}
 
 }

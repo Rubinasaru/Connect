@@ -65,10 +65,10 @@ public class AuthController {
     @Operation(summary = "Register a new user")
     public ResponseEntity<ResponseObject> register(@Valid @RequestBody RegisterRequest registerRequest){
         try {
-            System.out.println("Register request for: " + registerRequest.getUsername());
+            System.out.println("Register request for: " + registerRequest.getEmail());
             RegisterResponseDTO response = authService.register(registerRequest);
             return ResponseEntity.ok(
-                    ResponseObject.success("User registered successfully. Please verify your email!", response)
+                    ResponseObject.success("User registered successfully.", response)
             );
         } catch (Exception e) {
             System.err.println("Error in register: " + e.getMessage());

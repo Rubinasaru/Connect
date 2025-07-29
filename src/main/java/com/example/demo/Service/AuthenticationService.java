@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,16 +57,17 @@ public class AuthenticationService {
     }
     
     private void validateSignupRequest(RegisterRequest request) {
-        if (request == null || request.getUsername() == null || request.getPassword() == null) {
+        if (request == null || request.getEmail() == null || request.getPassword() == null) {
             throw new IllegalArgumentException("Signup request cannot be null or missing required fields!");
         }
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username (" + request.getUsername() +") " + " is already taken!");
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email (" + request.getEmail() +") " + " is already taken!");
         }
     }
     
     private User createUserFromRequest(RegisterRequest request) {
         return new User(
+                request.getEmail(),
                 request.getUsername(),
                 passwordEncoder.encode(request.getPassword())
 //                AuthProvider.LOCAL
@@ -82,8 +84,9 @@ public class AuthenticationService {
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwtToken = jwtService.generateToken(user);
+            System.out.println( jwtService.decodeJWT(jwtToken));
             return new UserInfoResponse(jwtToken, userDetails.getUsername());
         } catch (BadCredentialsException e) {
             throw new IllegalArgumentException("Invalid username or password!");
@@ -121,31 +124,16 @@ public class AuthenticationService {
         if (otpRequest == null || otpRequest.getEmail() == null || otpRequest.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email is required!");
         }
-        UserProfile user = profileRepository.findByEmail(otpRequest.getEmail())
+        User user = userRepository.findByEmail(otpRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + otpRequest.getEmail() + "!"));
         otpService.sendOtpEmail(otpRequest.getEmail());
     }
 
-    public void resetPassword(ResetPasswordDTO request) {
-
-        if(request == null){
-            System.out.println("Request is null");
+    @Transactional
+    public void resetPassword(ResetPasswordDTO request) throws Exception {
+        if (request == null || request.getEmail() == null || request.getNewPassword() == null || request.getConfirmPassword() == null) {
+            throw new IllegalArgumentException("All fields are required!");
         }
-
-        if(request.getUsername() == null){
-            System.out.println("Username is null");
-        }
-
-        if(request.getNewPassword() == null){
-            System.out.println("new passwrsed is null");
-        }
-
-        if(request.getConfirmPassword() == null){
-            System.out.println("confirm password is null");
-        }
-
-
-
         if(!request.isPasswordMatch()){
             throw new IllegalArgumentException("New password and Confirm new password does not match!");
         }
@@ -153,14 +141,12 @@ public class AuthenticationService {
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException("New password and confirm password must match!");
         }
-        if (!otpService.verifyOtp(request.getUsername(), request.getOtp())) {
-            throw new IllegalArgumentException("Invalid or expired OTP!");
-        }
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Username (" + request.getUsername() + ") is not registered!"));
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Email (" + request.getEmail() + ") is not registered!"));
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-        System.out.println("Password reset successfully for: " + request.getUsername() + "!");
+        System.out.println("Password reset successfully for: " + request.getEmail() + "!");
     }
 }
 

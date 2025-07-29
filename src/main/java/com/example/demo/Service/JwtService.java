@@ -8,17 +8,13 @@ import java.util.Map;
 
 import com.example.demo.Models.User;
 import com.example.demo.Models.UserProfile;
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -49,10 +45,14 @@ public class JwtService {
         UserProfile profile = user.getProfile();  // Fetch the linked profile
 
         Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
         claims.put("username", user.getUsername());
+        claims.put("email",user.getEmail());
+
+        boolean isProfileCompleted = user.isProfileCompleted();
+        claims.put("isProfileCompleted", isProfileCompleted);
 
         if (profile != null) {
-            claims.put("email", profile.getEmail());
             claims.put("firstName", profile.getFirstName());
             claims.put("lastName", profile.getLastName());
             claims.put("fullName", profile.getFirstName() + " " + profile.getLastName());
@@ -118,6 +118,15 @@ public class JwtService {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false; // Token is invalid
+    }
+
+    public Claims decodeJWT(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token.replace("Bearer ", ""))
+                .getBody();
     }
 
 }
