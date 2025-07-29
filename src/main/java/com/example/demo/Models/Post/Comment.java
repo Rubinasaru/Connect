@@ -28,7 +28,7 @@ public class Comment {
 	@JoinColumn(name = "user_id")
     private User user;
 
-    private String text;
+    private String content;
 
     private LocalDateTime commentedAt = LocalDateTime.now();
     
@@ -56,21 +56,22 @@ public class Comment {
   		this.user = user;
   	}
 
-  	public String getText() {
-  		return text;
-  	}
+	public String getContent() {
+		return content;
+	}
 
-  	public void setText(String text) {
-  		this.text = text;
-  	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 
-  	public LocalDateTime getCommentedAt() {
+	public LocalDateTime getCommentedAt() {
   		return commentedAt;
   	}
 
   	public void setCommentedAt(LocalDateTime commentedAt) {
   		this.commentedAt = commentedAt;
   	}
+
 
 }
 

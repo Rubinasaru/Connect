@@ -1,6 +1,8 @@
 package com.example.demo.Service.Post;
 
 import com.example.demo.DTO.request.Post.CommentRequestDTO;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.DTO.request.Post.PostRequestDTO;
@@ -16,4 +18,7 @@ public interface PostService {
     Long likePost(Long postId, Long userId);
     Comment addComment(Long postId, CommentRequestDTO commentDTO, Long userId);
     void deletePost(Long postId, Long userId);
+
+    Long getPostOwnerId(Long postId);
+
 }

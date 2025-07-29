@@ -25,7 +25,7 @@ public class MentorRecommendationController {
     private MentorRecommendationService recommender;
 
     @GetMapping("/mentors/{juniorId}")
-    public ResponseEntity<List<UserProfile>> recommendMentors(@PathVariable Long juniorId) {
+    public ResponseEntity<List<UserProfile>> recommendMentors(@PathVariable("juniorId") Long juniorId) {
         List<UserProfile> mentors = recommender.recommendMentors(juniorId);
         return ResponseEntity.ok(mentors);
     }

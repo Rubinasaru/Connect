@@ -51,7 +51,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long likePost(Long postId, Long userId) {
+    public  Long likePost(Long postId, Long userId) {
         Post post = postRepo.findById(postId).orElseThrow(()->new RuntimeException("Post not found!"));
         User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException("User NOT Found!"));
         if (likeRepo.existsByPostAndUser(post, user))
@@ -73,7 +73,7 @@ public class PostServiceImpl implements PostService {
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setUser(user);
-        comment.setText(dto.getText());
+        comment.setContent(dto.getContent());
         comment.setCommentedAt(LocalDateTime.now());
         return commentRepo.save(comment);
     }
@@ -86,5 +86,10 @@ public class PostServiceImpl implements PostService {
 //            throw new AccessDeniedException("Not authorized");
 //        }
         postRepo.delete(post);
+    }
+
+    @Override
+    public Long getPostOwnerId(Long postId) {
+        return postRepo.findUserIdById(postId);
     }
 }

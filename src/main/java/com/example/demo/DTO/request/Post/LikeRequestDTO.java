@@ -1,6 +1,7 @@
 package com.example.demo.DTO.request.Post;
 
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,11 +9,9 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class CommentRequestDTO {
+public class LikeRequestDTO {
+    private Long postId;
 
-	private Long postId;
-
-	private Long commenterId;
-	private String content;
+    private Long likerId; // ID of the user who liked the post
 
 }

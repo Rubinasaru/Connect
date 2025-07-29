@@ -1,6 +1,12 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.request.NotificationDTO;
 import com.example.demo.DTO.request.Post.CommentRequestDTO;
+import com.example.demo.DTO.request.Post.LikeRequestDTO;
+import com.example.demo.Models.Post.Comment;
+import com.example.demo.Models.User;
+import com.example.demo.Repository.CommentRepository;
+import com.example.demo.Repository.UserRepository;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
@@ -22,6 +30,15 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private NotificationController notificationController;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/{userId}")
     @Operation(summary="Post Created by users")
@@ -35,18 +52,59 @@ public class PostController {
         return ResponseEntity.ok(ResponseObject.success("fetched all the posts",postService.getFeedPosts()));
     }
 
-    @PostMapping("/{postId}/like")
+    @PostMapping("/like")
     @Operation(summary="user liked posts")
-    public ResponseEntity<ResponseObject> likePost(@PathVariable("postId") Long postId, @RequestParam("userId") Long userId) {
+    public ResponseEntity<String> likePost(@RequestBody LikeRequestDTO likeRequest,Long userId) {
 
-        return ResponseEntity.ok(ResponseObject.success("User Liked posts!",postService.likePost(postId, userId)));
+        User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User Not Found!"));
+        postService.likePost(likeRequest.getPostId(), likeRequest.getLikerId());
+
+
+        Long postOwnerId = postService.getPostOwnerId(likeRequest.getPostId());
+        System.out.println(postOwnerId);
+
+        if (!userId.equals(postOwnerId)) {
+            NotificationDTO notification = new NotificationDTO();
+            notification.setContent(user.getUsername() + " liked your post.");
+            notification.setSenderId(likeRequest.getLikerId());
+            notification.setRecipientId(postOwnerId);
+            notification.setType("LIKE");
+            notification.setPostId(likeRequest.getPostId());
+            notification.setTimestamp(LocalDateTime.now().toString());
+
+            notificationController.sendNotification(notification);
+        }
+        return ResponseEntity.ok("Post liked and notification sent.");
     }
 
-    @PostMapping("/{postId}/comment")
-    @Operation(summary="user Commented on posts")
-    public ResponseEntity<ResponseObject> commentPost(@PathVariable("postId") Long postId, @RequestBody CommentRequestDTO dto, @RequestParam("userId") Long userId) {
-        return ResponseEntity.ok(ResponseObject.success("User Commented Successfully!",postService.addComment(postId, dto, userId)));
+    @PostMapping("/comment")
+    @Operation(summary = "User commented on post")
+    public ResponseEntity<String> commentOnPost(
+            @RequestBody CommentRequestDTO commentRequest,
+            @RequestParam Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not Found!"));
+
+        postService.addComment(commentRequest.getPostId(), commentRequest, userId);
+
+        Long postOwnerId = postService.getPostOwnerId(commentRequest.getPostId());
+
+        if (!userId.equals(postOwnerId)) {
+            NotificationDTO notification = new NotificationDTO();
+            notification.setContent(user.getUsername() + " commented on your post.");
+            notification.setSenderId(userId);
+            notification.setRecipientId(postOwnerId);
+            notification.setType("COMMENT");
+            notification.setPostId(commentRequest.getPostId());
+            notification.setTimestamp(LocalDateTime.now().toString());
+
+            notificationController.sendNotification(notification);
+        }
+
+        return ResponseEntity.ok("Comment added and notification sent.");
     }
+
 
     @DeleteMapping("/{postId}")
     @Operation(summary="user deleted post")

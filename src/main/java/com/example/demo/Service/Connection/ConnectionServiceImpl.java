@@ -1,5 +1,7 @@
 package com.example.demo.Service.Connection;
 
+import com.example.demo.Controller.NotificationController;
+import com.example.demo.DTO.request.NotificationDTO;
 import com.example.demo.DTO.response.ConnectionResponseDTO;
 import com.example.demo.Enums.ConnectionStatus;
 import com.example.demo.Models.Connection;
@@ -10,6 +12,7 @@ import com.example.demo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,6 +23,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    @Autowired
+    private NotificationController notificationController;
 
     @Override
     public void sendConnectionRequest(Long senderId, Long receiverId) {
@@ -38,7 +44,17 @@ public class ConnectionServiceImpl implements ConnectionService {
         connection.setStatus(ConnectionStatus.PENDING);
 
         connectionRepository.save(connection);
+
+        NotificationDTO notification = new NotificationDTO();
+        notification.setSenderId(senderId);
+        notification.setRecipientId(receiverId);
+        notification.setType("CONNECTION_REQUEST");
+        notification.setContent(sender.getFirstName() + " sent you a connection request");
+        notification.setTimestamp(LocalDateTime.now().toString());
+
+        notificationController.sendNotification(notification);
     }
+
 
     @Override
     public void respondToRequest(Long connectionId, boolean accept) {
