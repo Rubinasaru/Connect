@@ -36,16 +36,22 @@ public class MentorRecommendationService {
                 .orElseThrow(() -> new RuntimeException("Junior not found"));
 
         // Normalize junior interests
-        String juniorInterests = normalizeInterests(junior.getInterest().toString());
+        String juniorInterests = normalizeInterests(String.join(",", junior.getInterest()));
 
-        List<UserProfile> mentors = profileRepository.findByRole(UserType.valueOf("MENTOR"));
+        List<UserProfile> mentors = profileRepository.findByRole(UserType.MENTOR).stream()
+                .filter(m -> !m.getId().equals(junior.getId())) //Exclude self
+                .collect(Collectors.toList());
 
         List<MentorScore> scoredMentors = mentors.stream()
                 .map(m -> {
-                    String mentorInterests = normalizeInterests(m.getInterest().toString());
+                    String mentorInterests = normalizeInterests(String.join(",", m.getInterest()));
                     double score = tfidfUtil.computeSimilarity(juniorInterests, mentorInterests);
+
+                    System.out.println("Mentor: " + m.getFirstName() + " | Score: " + score);
+
                     return new MentorScore(m, score);
                 })
+                .filter(ms -> ms.score > 0.0)
                 .sorted((a, b) -> Double.compare(b.score, a.score))
                 .limit(5)
                 .collect(Collectors.toList());

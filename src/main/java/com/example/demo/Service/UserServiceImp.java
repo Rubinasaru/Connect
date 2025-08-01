@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,7 @@ public class UserServiceImp implements UserService {
         if (user.getProfile() != null) {
             throw new IllegalStateException("Profile already exists for this user.");
         }
+
         UserProfile profile = new UserProfile();
         profile.setUser(user);
         profile.setDepartment(request.getDepartment());
@@ -70,7 +72,9 @@ public class UserServiceImp implements UserService {
         profile.setFirstName(request.getFirstName());
         profile.setMiddleName(request.getMiddleName());
         profile.setLastName(request.getLastName());
+
         profile.setProfileImgUrl(request.getProfileImgUrl());
+
 
         user.setProfile(profile);
 
@@ -104,7 +108,6 @@ public class UserServiceImp implements UserService {
         }
         return false;
     }
-
     @Override
     @Transactional
     public UserDTO updateUserDetails(Long id, UserDTO dto) {
@@ -145,16 +148,49 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file) {
-        UserProfile profile = profileRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
-        try {
-            String fileName = FileService.uploadImage(filePath, file);
-            profile.setProfileImgUrl(fileName);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not store image", e);
-        }
-        return mapToDTO(profileRepository.save(profile));
+    public List<UserDTO> searchUsersByInterestOrName(String query, String currentUsername) {
+        String q = query.trim().toLowerCase();
+
+        List<User> allUsers = userRepository.findAll();
+
+        List<User> filtered = allUsers.stream()
+                .filter(user -> {
+                    // Exclude current user
+                    if (user.getUsername().equalsIgnoreCase(currentUsername)) return false;
+
+                    UserProfile profile = user.getProfile();
+                    if (profile == null) return false;
+
+                    // Match by interest
+                    boolean interestMatch = profile.getInterest() != null &&
+                            profile.getInterest().stream()
+                                    .anyMatch(i -> i.toLowerCase().contains(q));
+
+                    // Match by name
+                    boolean nameMatch = (profile.getFirstName() != null && profile.getFirstName().toLowerCase().contains(q)) ||
+                            (profile.getLastName() != null && profile.getLastName().toLowerCase().contains(q));
+
+                    return interestMatch || nameMatch;
+                })
+                .collect(Collectors.toList());
+
+        return filtered.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
+
+
+//    @Override
+//    public UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file) {
+//        UserProfile profile = profileRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+//        try {
+//            String fileName = FileService.uploadImage(filePath, file);
+//            profile.setProfileImgUrl(fileName);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not store image", e);
+//        }
+//        return mapToDTO(profileRepository.save(profile));
+//    }
 
     public UserDTO mapToDTO(User user) {
         UserProfile profile = user.getProfile();

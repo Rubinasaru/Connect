@@ -34,7 +34,8 @@ public class SwaggerConfig {
 	                                new Tag().name("Otp Controller").description("OTP related information"),
 	                                new Tag().name("Post Controller").description("Posts related information"),
 									new Tag().name("Mentor Recommendation Controller"). description("Recommendation related information"),
-									new Tag().name("Connections Controller").description("User Connections related information")
+									new Tag().name("Connections Controller").description("User Connections related information"),
+									new Tag().name("Notification Controller").description("Notifications related information")
 	                        )
 	                )
 	                .addSecurityItem(

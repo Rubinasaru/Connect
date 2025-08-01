@@ -8,11 +8,16 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.example.demo.DTO.request.Post.CommentRequestDTO;
 import com.example.demo.DTO.response.PostResponse;
+import com.example.demo.Models.Connection;
+import com.example.demo.Repository.*;
 import com.example.demo.Service.JwtService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +26,6 @@ import com.example.demo.Models.User;
 import com.example.demo.Models.Post.Comment;
 import com.example.demo.Models.Post.Like;
 import com.example.demo.Models.Post.Post;
-import com.example.demo.Repository.CommentRepository;
-import com.example.demo.Repository.LikeRepository;
-import com.example.demo.Repository.PostRepository;
-import com.example.demo.Repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private ConnectionRepository connectRepository;
+
 //    @Override
 //    public Post createPost(PostRequestDTO dto, Long userId) {
 //        User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException("User Not Found!"));
@@ -59,6 +63,10 @@ public class PostServiceImpl implements PostService {
 //    }
 
     private final String uploadDir = "uploads/";
+
+
+    @Value("${app.media.base-url}")
+    private String mediaBaseUrl;
 
     @Override
     public PostResponse createPost(String content, MultipartFile file, String token) throws IOException {
@@ -74,7 +82,7 @@ public class PostServiceImpl implements PostService {
                 post.setMediaType("image");
             else if (contentType != null && contentType.startsWith("video"))
                 post.setMediaType("video");
-            else if(contentType == null && contentType.isEmpty())
+            else
                 post.setMediaType("text");
         }
 
@@ -84,8 +92,10 @@ public class PostServiceImpl implements PostService {
 
         Post saved = postRepo.save(post);
 
-        return new PostResponse(saved.getId(),  user.getUsername(),saved.getContent(), saved.getMediaUrl(),
-                saved.getMediaType(),saved.getCreatedAt());
+        String fullMediaUrl = saved.getMediaUrl() != null ? mediaBaseUrl + saved.getMediaUrl() : null;
+
+        return new PostResponse(saved.getId(),  user.getUsername(),saved.getContent(), fullMediaUrl,
+                saved.getMediaType(),user.getProfile().getProfileImgUrl(),saved.getCreatedAt());
     }
 
     public String saveFile(MultipartFile file) throws IOException {
@@ -121,9 +131,25 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<Post> getFeedPosts() {
-        return postRepo.findAllByOrderByCreatedAtDesc();
+    public List<Post> getFeedPosts(String token) {
+        User user = getUserFromToken(token);
+
+        List<Connection> connections = connectRepository.findAcceptedConnectionsByUserId(user.getId());
+
+        List<Long> connectedUserIds = connections.stream()
+                .map(connection -> {
+                    Long senderId = connection.getSender().getId();
+                    Long receiverId = connection.getReceiver().getId();
+                    return senderId.equals(user.getId()) ? receiverId : senderId;
+                })
+                .collect(Collectors.toList());
+
+        connectedUserIds.add(user.getId()); // include own posts
+
+        return postRepo.findByUserIdInOrderByCreatedAtDesc(connectedUserIds);
     }
+
+
 
     @Override
     public  Long likePost(Long postId, Long userId) {

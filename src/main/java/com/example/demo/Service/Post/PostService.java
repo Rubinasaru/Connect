@@ -18,7 +18,7 @@ import java.util.List;
 public interface PostService {
 //    Post createPost(PostRequestDTO postDTO, Long userId);
     PostResponse createPost(String content, MultipartFile file, String token) throws IOException;
-    List<Post> getFeedPosts();
+    List<Post> getFeedPosts(String token);
     Long likePost(Long postId, Long userId);
     Comment addComment(Long postId, CommentRequestDTO commentDTO, Long userId);
     void deletePost(Long postId, Long userId);

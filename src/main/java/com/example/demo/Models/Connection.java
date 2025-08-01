@@ -63,6 +63,16 @@ public class Connection {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public Long getOtherUserId(Long userId) {
+        if (sender != null && sender.getId()==(userId)) {
+            return receiver != null ? receiver.getId() : null;
+        } else if (receiver != null && receiver.getId()==(userId)) {
+            return sender != null ? sender.getId() : null;
+        }
+        return null; // or throw exception if invalid
+    }
+
 }
 
 

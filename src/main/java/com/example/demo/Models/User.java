@@ -2,6 +2,8 @@ package com.example.demo.Models;
 
 
 import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
@@ -133,4 +135,5 @@ public class User {
 	public void setProfileCompleted() {
 		isProfileCompleted = true;
 	}
+
 }

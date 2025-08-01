@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.request.ConnectionRequestDTO;
 import com.example.demo.DTO.request.NotificationDTO;
+import com.example.demo.DTO.request.UserDTO;
 import com.example.demo.DTO.response.ConnectionResponseDTO;
 import com.example.demo.DTO.response.ResponseObject;
 import com.example.demo.Service.Connection.ConnectionService;
@@ -34,12 +35,25 @@ public class ConnectionController {
         return ResponseEntity.ok("Connection request sent");
     }
 
-    @PostMapping("/{senderId}/respond")
-    public ResponseEntity<String> respondRequest(@PathVariable("senderId") Long id,
+    @PostMapping("/respond")
+    public ResponseEntity<String> respondRequest(@RequestParam Long senderId,
+                                                 @RequestParam Long receiverId,
                                                  @RequestParam boolean accept) {
-        connectionService.respondToRequest(id, accept);
+        connectionService.respondToRequest(senderId, receiverId, accept);
         return ResponseEntity.ok(accept ? "Request accepted" : "Request rejected");
     }
+
+    @GetMapping("/{userId}/sent/pending")
+    public List<ConnectionResponseDTO> getSentPending(@PathVariable("userId") Long userId) {
+        return connectionService.getSentPendingRequests(userId);
+    }
+
+    @GetMapping("/{userId}/suggestions")
+    public List<UserDTO> getSuggestions(@PathVariable("userId") Long userId) {
+        return connectionService.getSuggestedConnections(userId);
+    }
+
+
 
     @GetMapping("/{userId}/pending")
     public List<ConnectionResponseDTO> getPending(@PathVariable("userId") Long userId) {

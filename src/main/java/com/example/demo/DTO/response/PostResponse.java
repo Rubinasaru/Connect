@@ -16,6 +16,7 @@ public class PostResponse {
     private String content;
     private String mediaUrl;
     private String mediaType;
+    private String profileImgUrl;
     private LocalDateTime createdAt;
 
 

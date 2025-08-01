@@ -1,5 +1,7 @@
 package com.example.demo.Service;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,5 +32,12 @@ public interface UserService {
 
 		UserDTO updateUserRoles(Long userId, UserType roles);
 
-		UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file);
+	@Query("SELECT u FROM User u JOIN u.profile p " +
+			"WHERE LOWER(p.interest) LIKE %:query% " +
+			"OR LOWER(p.firstName) LIKE %:query% " +
+			"OR LOWER(p.lastName) LIKE %:query%")
+	List<UserDTO> searchUsersByInterestOrName(@Param("query") String query,String username);
+
+
+//		UserDTO updateUserProfileImage(Long userId,String filePath, MultipartFile file);
 }

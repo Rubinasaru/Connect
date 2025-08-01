@@ -72,10 +72,13 @@ public class WebSecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).authenticated()
-//                        .requestMatchers("/api/v1/user/setupprofile").permitAll()
-                        .requestMatchers("/api/v1/auth/register").permitAll()
-                        .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/v1/user/image/**").permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(AUTHENTICATED_ENDPOINTS).authenticated()
+                       .requestMatchers("/ws-notifications/**").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/app/**").permitAll()
                         .anyRequest().authenticated()
                 )
               
@@ -109,16 +112,8 @@ public class WebSecurityConfig {
 
     // Constants for endpoints
     private static final String[] PUBLIC_ENDPOINTS = {
-    		"/api/v1/admin/**",
-            "/api/v1/auth/resetPassword",
-            "/api/v1/auth/forgot-password",
-            "/api/v1/auth/verify-otp",
-            "/api/v1/user/**",
-            "/api/v1/posts/like",
-            "/aoi/v1/posts/comment",
-            "/api/v1/posts/{postId}",
-            "/api/v1/connections/**",
-            "/api/v1/recommendations/**",
+            "/api/v1/auth/register",
+            "/api/v1/auth/login",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
@@ -126,6 +121,22 @@ public class WebSecurityConfig {
             "/configuration/ui",
             "/configuration/security",
             "/webjars/**",
+    };
+
+    private static final String[] AUTHENTICATED_ENDPOINTS={
+            "/api/v1/admin/**",
+            "/api/v1/auth/resetPassword",
+            "/api/v1/auth/forgot-password",
+            "/api/v1/auth/verify-otp",
+            "/api/v1/user/**",
+            "/api/v1/posts/like",
+            "/aoi/v1/posts/comment",
+            "/api/v1/posts/{postId}",
+            "/api/v1/posts/create",
+            "/api/v1/posts/feed",
+            "/api/v1/connections/**",
+            "/api/v1/recommendations/**",
+            "/api/v1/notifications/**"
     };
 
     private static final String[] SWAGGER_ENDPOINTS = {

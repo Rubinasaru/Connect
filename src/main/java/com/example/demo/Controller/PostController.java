@@ -69,7 +69,7 @@ public ResponseEntity<PostResponse> createPost(
     @GetMapping("/feed")
     @Operation(summary="Get all the Feeds")
     public ResponseEntity<List<Post>> getFeedPosts(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(postService.getFeedPosts());
+        return ResponseEntity.ok(postService.getFeedPosts(token));
     }
 
     @PostMapping("/like")
